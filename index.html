@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Email Assistant</title>
+  <style>
+    body{font-family:sans-serif;max-width:740px;margin:48px auto;padding:0 20px;color:#111}
+    h1{font-size:22px;font-weight:500;margin-bottom:6px}
+    p.sub{font-size:13px;color:#666;margin-bottom:20px}
+    textarea{width:100%;height:200px;padding:10px;font-size:14px;
+             border:1px solid #ddd;border-radius:6px;resize:vertical}
+    .row{display:flex;gap:16px;align-items:center;margin-top:12px}
+    label{font-size:13px;color:#555}
+    select{font-size:13px;padding:5px 8px;border:1px solid #ddd;border-radius:5px}
+    button{padding:10px 24px;background:#4f46e5;color:#fff;border:none;
+           border-radius:6px;font-size:14px;cursor:pointer;margin-top:14px}
+    button:hover{background:#4338ca}
+    .warn-bar{background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;
+              padding:8px 14px;font-size:13px;color:#92400e;margin-bottom:16px}
+  </style>
+</head>
+<body>
+  <h1>Smart Email Assistant</h1>
+  <p class="sub">Paste an email — get intent classification, an AI reply, and one-click calendar scheduling.</p>
+
+  
+
+  <form action="/analyze" method="POST">
+    <textarea name="email_text" placeholder="Paste the email you received here..." required></textarea>
+    <div class="row">
+      <label>Reply tone:</label>
+      <select name="tone">
+        <option value="professional">Professional</option>
+        <option value="friendly">Friendly</option>
+        <option value="concise">Concise</option>
+        <option value="apologetic">Apologetic</option>
+        <option value="assertive">Assertive</option>
+      </select>
+    </div>
+    <button type="submit">Analyze Email</button>
+  </form>
+</body></html>

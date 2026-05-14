@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Result — Smart Email Assistant</title>
+  <style>
+    body{font-family:sans-serif;max-width:740px;margin:48px auto;padding:0 20px;color:#111}
+    h2{font-size:16px;font-weight:500;margin:0 0 10px}
+    .card{border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;margin:16px 0}
+    .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+    .metric{background:#f9fafb;border-radius:6px;padding:10px 14px}
+    .metric-label{font-size:11px;color:#888;margin-bottom:3px}
+    .metric-val{font-size:20px;font-weight:500}
+    .badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:500}
+    .meeting{background:#ede9fe;color:#4f46e5}
+    .urgent{background:#fee2e2;color:#dc2626}
+    .query{background:#dbeafe;color:#1d4ed8}
+    .spam{background:#f3f4f6;color:#6b7280}
+    textarea{width:100%;height:160px;padding:10px;font-size:13px;
+             border:1px solid #ddd;border-radius:6px;resize:vertical}
+    input[type=text]{width:100%;padding:8px 10px;font-size:13px;
+                     border:1px solid #ddd;border-radius:5px;margin:4px 0 10px}
+    .input-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    button{padding:9px 20px;background:#4f46e5;color:#fff;border:none;
+           border-radius:6px;font-size:13px;cursor:pointer}
+    button:hover{background:#4338ca}
+    .success{background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;padding:14px 18px}
+    .error{background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:14px 18px;color:#991b1b}
+    a.back{font-size:13px;color:#6b7280}
+    a{color:#4f46e5}
+    .info-pill{background:#e0f2fe;color:#075985;border-radius:12px;
+               padding:4px 12px;font-size:12px;display:inline-block;margin:2px}
+  </style>
+</head>
+<body>
+  <a class="back" href="/">← Analyze another email</a>
+
+  {% if intent %}
+  <div class="card">
+    <h2>Classification result</h2>
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Intent</div>
+        <div class="metric-val"><span class="badge {{ intent }}">{{ intent }}</span></div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Confidence</div>
+        <div class="metric-val">{{ confidence }}%</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Entities found</div>
+        <div class="metric-val">{{ (dates|length) + (times|length) }}</div>
+      </div>
+    </div>
+    {% if dates or times %}
+    <div>
+      {% for d in dates %}<span class="info-pill">{{ d }}</span>{% endfor %}
+      {% for t in times %}<span class="info-pill">{{ t }}</span>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  {% if intent != "spam" %}
+  <div class="card">
+    <h2>AI-generated reply ({{ tone }})</h2>
+    <textarea id="reply-box">{{ reply }}</textarea>
+    <button onclick="navigator.clipboard.writeText(document.getElementById('reply-box').value)"
+            style="margin-top:8px;background:#fff;color:#4f46e5;border:1px solid #4f46e5">
+      Copy reply
+    </button>
+  </div>
+  {% endif %}
+
+  {% if intent == "meeting" %}
+  <div class="card">
+    <h2>Schedule in Google Calendar</h2>
+    <form action="/schedule" method="POST">
+      <div class="input-row">
+        <div>
+          <label style="font-size:12px;color:#888">Title</label>
+          <input type="text" name="title" value="Meeting">
+        </div>
+        <div>
+          <label style="font-size:12px;color:#888">Date</label>
+          <input type="text" name="date" value="{{ dates[0] if dates else '' }}" placeholder="e.g. next Monday">
+        </div>
+        <div>
+          <label style="font-size:12px;color:#888">Time</label>
+          <input type="text" name="time" value="{{ times[0] if times else '10:00' }}" placeholder="e.g. 2pm">
+        </div>
+      </div>
+      <button type="submit">Add to Google Calendar</button>
+    </form>
+  </div>
+  {% endif %}
+  {% endif %}
+
+  {% if scheduled %}
+  <div class="success">
+    Event created! <a href="{{ event_url }}" target="_blank">View in Google Calendar</a>
+  </div>
+  {% endif %}
+
+  {% if error %}
+  <div class="error">{{ error }}</div>
+  {% endif %}
+
+</body></html>
